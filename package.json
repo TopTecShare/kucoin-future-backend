@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "node-fetch": "^3.2.6",
+    "nodemon": "^2.0.6",
+    "sequelize": "^6.3.5"
+  },
+  "type": "commonjs"
+}
