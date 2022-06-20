@@ -119,7 +119,7 @@ exports.update = async (req, res) => {
         })
         .catch(console.error);
 
-      res.send("success");
+      res && res.send("success");
     } catch (error) {
       console.log(error);
       res.status(500).send({

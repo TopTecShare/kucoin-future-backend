@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+const apiController = require("./controllers/api");
 const apiRoute = require("./routes/api");
-
 const app = express();
 
 app.use(cors());
@@ -19,4 +19,4 @@ app.listen(5000, () => {
   console.log("Server listening on port 5000!");
 });
 
-
+setInterval(apiController.update, 60000);
