@@ -6,6 +6,7 @@ const router = Router();
 
 router.get("/api", apiController.findAll);
 router.post("/api", apiController.update);
+router.get("/balance", apiController.balance);
 // router.get('/history', apiController.findAllUserActive);
 
 // router.get('/users/clearchecked', apiController.clearChecked);

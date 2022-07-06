@@ -14,8 +14,44 @@ exports.findAll = async (req, res) => {
     const data = await History.findAll({
       order: [["id", "Asc"]],
     });
-
     res.send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: error.message || "Some error occurred while retrieving users.",
+    });
+  }
+};
+
+exports.balance = async (req, res) => {
+  try {
+    const api_key = "62a0906fa5b3460001924a99"; // "62a0643e7b57eb000169d9de"; //
+    const api_secret = "71741d7f-e302-44d7-8fdf-a174d3022a99"; // "3d9aad71-55f4-4f2c-a00c-7adce001040a";
+    const api_passphrase = "thisisthepassphrase"; // "chocolatechip@bloodles.com"; //
+
+    // luna/usdt
+    const api = "/api/v1/account-overview"; // ?symbol=XBTUSDTM&&active=done"; //"/api/v1/orders?symbol=XBTUSDTM";
+    const url = "https://api-futures.kucoin.com" + api;
+    const now = Date.now();
+    const str_to_sign = now + "GET" + api;
+
+    const signaturehash = CryptoJS.HmacSHA256(str_to_sign, api_secret);
+    const passphrasehash = CryptoJS.HmacSHA256(api_passphrase, api_secret);
+    const signature = CryptoJS.enc.Base64.stringify(signaturehash);
+    const passphrase = CryptoJS.enc.Base64.stringify(passphrasehash);
+    const headers = {
+      "KC-API-SIGN": signature,
+      "KC-API-TIMESTAMP": now,
+      "KC-API-KEY": api_key,
+      "KC-API-PASSPHRASE": passphrase,
+      "KC-API-KEY-VERSION": "2",
+    };
+    var requestOptions = { method: "GET", headers, redirect: "follow" };
+    const data = await fetch(url, requestOptions).then((response) =>
+      response.json()
+    );
+
+    res.send(`${data.data.availableBalance}`);
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -26,8 +62,9 @@ exports.findAll = async (req, res) => {
 
 exports.update = async (req, res) => {
   const symbols = ["LUNAUSDTM"];
-  for (let symbol of symbols) {
-    try {
+
+  try {
+    for (let symbol of symbols) {
       const data = await History.findOne({
         where: { contracts: symbol },
         order: [["position", "DESC"]],
@@ -118,13 +155,12 @@ exports.update = async (req, res) => {
             });
         })
         .catch(console.error);
-
-      res && res.send("success");
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        message: error.message || "Some error occurred while retrieving users.",
-      });
     }
+    res && res.send("success");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: error.message || "Some error occurred while retrieving users.",
+    });
   }
 };

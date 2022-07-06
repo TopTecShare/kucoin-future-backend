@@ -20,3 +20,7 @@ app.listen(5000, () => {
 });
 
 setInterval(apiController.update, 60000);
+
+process.on("error", (e) => {
+  console.log(e);
+});
