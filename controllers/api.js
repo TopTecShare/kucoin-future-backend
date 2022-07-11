@@ -30,7 +30,7 @@ exports.balance = async (req, res) => {
     const api_passphrase = "thisisthepassphrase"; // "chocolatechip@bloodles.com"; //
 
     // luna/usdt
-    const api = "/api/v1/account-overview"; // ?symbol=XBTUSDTM&&active=done"; //"/api/v1/orders?symbol=XBTUSDTM";
+    const api = "/api/v1/account-overview?currency=USDT"; // ?symbol=XBTUSDTM&&active=done"; //"/api/v1/orders?symbol=XBTUSDTM";
     const url = "https://api-futures.kucoin.com" + api;
     const now = Date.now();
     const str_to_sign = now + "GET" + api;
@@ -51,7 +51,7 @@ exports.balance = async (req, res) => {
       response.json()
     );
 
-    res.send(`${data.data.availableBalance}`);
+    res.send(`${data.data.accountEquity}`);
   } catch (error) {
     console.log(error);
     res.status(500).send({
