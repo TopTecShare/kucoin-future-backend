@@ -53,15 +53,16 @@ const balance = async () => {
 };
 
 const update = async () => {
-  const symbols = ["LUNAUSDTM", "BTCUSDTM"];
+  const symbols = ["LUNAUSDTM", "XBTUSDTM"];
   for (let symbol of symbols) {
     const data = await History.findOne({
       where: { contracts: symbol },
       order: [["position", "DESC"]],
     });
     const startTime = data.position;
+    let flag;
     let currentFilled = data.remain;
-    let volume;
+    let volume = 0;
     let direction;
     let position;
     if (currentFilled !== 0) {
@@ -97,6 +98,7 @@ const update = async () => {
       .then((response) => response.json())
 
       .then(async (e) => {
+        console.log(e);
         const result = e.data.items
           .filter((e) => e.remark === null && e.endAt > startTime)
           .map((e) => ({
@@ -121,6 +123,7 @@ const update = async () => {
             volume -= Number(el.filledValue);
             currentFilled -= el.filledSize;
           }
+          console.log(volume, currentFilled);
           if (currentFilled === 0) {
             await History.create({
               contracts: symbol,
@@ -129,36 +132,39 @@ const update = async () => {
               position,
               remain: currentFilled,
             });
-            const ethers = require("ethers");
-            const NODE_URL = "https://data-seed-prebsc-1-s1.binance.org:8545/";
-            const PRIVATE_KEY =
-              "0x25f1e68105423f92751d7655378c6df9c63b803e6a6940477e5006c8284a34c8";
-            const address = "0x59994706Dd9758063dcE9E2aE5021cf1ea90056A";
-            const abi = [
-              {
-                inputs: [
-                  {
-                    internalType: "uint256",
-                    name: "_tradeBalance",
-                    type: "uint256",
-                  },
-                ],
-                name: "updateTradeBalance",
-                outputs: [],
-                stateMutability: "nonpayable",
-                type: "function",
-              },
-            ];
-            const provider = new ethers.providers.JsonRpcProvider(NODE_URL);
-            const signer = new ethers.Wallet(PRIVATE_KEY, provider);
-            const contract = new ethers.Contract(address, abi, signer);
-            const value = BigInt(
-              10 ** 18 * (await balance()).data.accountEquity
-            );
-            contract.updateTradeBalance(value);
+            flag = true;
+
             direction = undefined;
             volume = 0;
           }
+        }
+
+        if (flag && false) {
+          const ethers = require("ethers");
+          const NODE_URL = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+          const PRIVATE_KEY =
+            "0x25f1e68105423f92751d7655378c6df9c63b803e6a6940477e5006c8284a34c8";
+          const address = "0x59994706Dd9758063dcE9E2aE5021cf1ea90056A";
+          const abi = [
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_tradeBalance",
+                  type: "uint256",
+                },
+              ],
+              name: "updateTradeBalance",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ];
+          const provider = new ethers.providers.JsonRpcProvider(NODE_URL);
+          const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+          const contract = new ethers.Contract(address, abi, signer);
+          const value = BigInt(10 ** 18 * (await balance()).data.accountEquity);
+          contract.updateTradeBalance(value);
         }
 
         if (currentFilled !== 0)
