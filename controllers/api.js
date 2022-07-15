@@ -8,6 +8,9 @@ const db = require("../models");
 db.sequelize.sync();
 
 const History = db.history;
+const api_key = process.env.KUCOIN_API_KEY;
+const api_secret = process.env.KUCOIN_API_SECRET;
+const api_passphrase = process.env.KUCOIN_API_PASS;
 
 exports.findAll = async (req, res) => {
   try {
@@ -24,10 +27,6 @@ exports.findAll = async (req, res) => {
 };
 
 const balance = async () => {
-  const api_key = "62a0906fa5b3460001924a99"; // "62a0643e7b57eb000169d9de"; //
-  const api_secret = "71741d7f-e302-44d7-8fdf-a174d3022a99"; // "3d9aad71-55f4-4f2c-a00c-7adce001040a";
-  const api_passphrase = "thisisthepassphrase"; // "chocolatechip@bloodles.com"; //
-
   // luna/usdt
   const api = "/api/v1/account-overview?currency=USDT"; // ?symbol=XBTUSDTM&&active=done"; //"/api/v1/orders?symbol=XBTUSDTM";
   const url = "https://api-futures.kucoin.com" + api;
@@ -71,10 +70,6 @@ const update = async () => {
       position = data.position;
       await data.destroy();
     }
-
-    const api_key = "62a0906fa5b3460001924a99"; // "62a0643e7b57eb000169d9de"; //
-    const api_secret = "71741d7f-e302-44d7-8fdf-a174d3022a99"; // "3d9aad71-55f4-4f2c-a00c-7adce001040a";
-    const api_passphrase = "thisisthepassphrase"; // "chocolatechip@bloodles.com"; //
 
     // luna/usdt
     const api = `/api/v1/orders/?active=done&&symbol=${symbol}`; // ?symbol=XBTUSDTM&&active=done"; //"/api/v1/orders?symbol=XBTUSDTM";
